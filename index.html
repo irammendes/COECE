@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Formulário SCI 234</title>
+    <title>Formulário SCI 234 (Offline)</title>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
     <style>
@@ -61,9 +61,6 @@
             cursor: pointer;
             font-size: 16px;
             margin-top: 20px;
-            display: block;
-            margin-left: auto;
-            margin-right: auto;
         }
         button:hover {
             background-color: #0055aa;
@@ -72,10 +69,36 @@
             position: absolute;
             left: -9999px;
         }
+        .status {
+            padding: 10px;
+            margin: 10px 0;
+            border-radius: 4px;
+            text-align: center;
+        }
+        .online {
+            background-color: #d4edda;
+            color: #155724;
+        }
+        .offline {
+            background-color: #f8d7da;
+            color: #721c24;
+        }
+        .sync-status {
+            margin-top: 20px;
+            padding: 10px;
+            border-radius: 4px;
+        }
+        .button-group {
+            display: flex;
+            gap: 10px;
+            justify-content: center;
+        }
     </style>
 </head>
 <body>
     <div class="container">
+        <div id="connectionStatus" class="status offline">Você está offline</div>
+        
         <h1>FORMULÁRIO SCI 234</h1>
         
         <form id="sciForm">
@@ -123,27 +146,39 @@
                 <input type="time" id="currentTime" required>
             </div>
             
-            <button type="button" onclick="gerarPDF()">Gerar PDF para Impressão</button>
+            <div class="button-group">
+                <button type="button" onclick="saveFormData()">Salvar Localmente</button>
+                <button type="button" onclick="gerarPDF()">Gerar PDF</button>
+                <button type="button" onclick="syncData()" id="syncButton" disabled>Sincronizar</button>
+            </div>
         </form>
+        
+        <div id="syncStatus" class="sync-status" style="display: none;"></div>
     </div>
 
+    <!-- Template para o PDF (oculto) -->
     <div id="pdfPreview">
         <div style="width: 210mm; min-height: 297mm; padding: 15mm; margin: 0 auto; box-sizing: border-box; font-family: Arial, sans-serif; background: white; position: relative;">
+            <!-- Logo no canto superior esquerdo -->
             <div style="position: absolute; top: 15mm; left: 15mm;">
                 <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRxzJ017VFFl09z6LzBxTtNC6axLwHq6YYK-A&s" style="max-width: 50mm; max-height: 20mm;">
             </div>
             
+            <!-- Cabeçalho -->
             <div style="text-align: center; margin-bottom: 10mm; padding-top: 10mm;">
-                <div style="font-size: 14pt; font-weight: bold; margin-bottom: 5px;">FORMULÁRIO SCI 234</div>
-                
+                <div style="font-size: 14pt; font-weight: bold; margin-bottom: 5px;">FORMULÁRIO SCI -- 234</div>
+                <div style="font-size: 10pt; color: #555;">MATRIZ DE ANÁLISE DE TRABALHO</div>
             </div>
             
+            <!-- Informações da organização -->
             <div style="position: absolute; top: 15mm; right: 15mm; text-align: right; font-size: 9pt; border: 1px solid #ddd; padding: 5px;">
                 <div style="font-weight: bold;">COORDENAÇÃO</div>
                 <div>Emergências climáticas e epizotias</div>
             </div>
             
+            <!-- Tabela principal -->
             <table style="width: 100%; border-collapse: collapse; margin-bottom: 10mm; border: 1px solid #000;">
+                <!-- Conteúdo do formulário será inserido aqui pelo JavaScript -->
                 <tr>
                     <td style="border: 1px solid #000; padding: 8px; width: 50%; vertical-align: top;">
                         <div style="font-weight: bold; margin-bottom: 5px;">1. Nome do Evento</div>
@@ -203,12 +238,21 @@
                 </tr>
             </table>
             
-
+            <div style="text-align: center; font-size: 10pt; margin-top: 5mm; border-top: 1px solid #000; padding-top: 3mm;">
+                MATRIZ DE ANÁLISE DE TRABALHO - Página 1 de 1 - SCI 234
+            </div>
         </div>
     </div>
 
     <script>
+        // Configuração inicial
         document.addEventListener('DOMContentLoaded', function() {
+            // Verificar status da conexão
+            updateConnectionStatus();
+            window.addEventListener('online', updateConnectionStatus);
+            window.addEventListener('offline', updateConnectionStatus);
+            
+            // Definir data atual como padrão
             const today = new Date();
             const dateStr = today.toISOString().split('T')[0];
             const timeStr = today.getHours().toString().padStart(2, '0') + ':' + 
@@ -217,13 +261,135 @@
             document.getElementById('currentDate').value = dateStr;
             document.getElementById('currentTime').value = timeStr;
             
+            // Definir data final padrão como 7 dias após a data atual
             const nextWeek = new Date();
             nextWeek.setDate(today.getDate() + 7);
             const nextWeekStr = nextWeek.toISOString().split('T')[0];
             document.getElementById('startDate').value = dateStr;
             document.getElementById('endDate').value = nextWeekStr;
+            
+            // Carregar dados salvos localmente
+            loadLocalData();
+            
+            // Verificar se há dados pendentes para sincronizar
+            checkPendingSync();
         });
 
+        // Atualizar status da conexão
+        function updateConnectionStatus() {
+            const statusElement = document.getElementById('connectionStatus');
+            const syncButton = document.getElementById('syncButton');
+            
+            if (navigator.onLine) {
+                statusElement.textContent = "Você está online";
+                statusElement.className = "status online";
+                syncButton.disabled = false;
+            } else {
+                statusElement.textContent = "Você está offline - Os dados serão salvos localmente";
+                statusElement.className = "status offline";
+                syncButton.disabled = true;
+            }
+        }
+
+        // Salvar dados no localStorage
+        function saveFormData() {
+            const formData = {
+                eventName: document.getElementById('eventName').value,
+                startDate: document.getElementById('startDate').value,
+                endDate: document.getElementById('endDate').value,
+                objectives: document.getElementById('objectives').value,
+                strategies: document.getElementById('strategies').value,
+                tactics: document.getElementById('tactics').value,
+                preparedBy: document.getElementById('preparedBy').value,
+                currentDate: document.getElementById('currentDate').value,
+                currentTime: document.getElementById('currentTime').value,
+                timestamp: new Date().getTime(),
+                synced: false
+            };
+            
+            // Salvar no localStorage
+            localStorage.setItem('sciFormData', JSON.stringify(formData));
+            
+            // Mostrar mensagem de sucesso
+            const syncStatus = document.getElementById('syncStatus');
+            syncStatus.textContent = "Dados salvos localmente com sucesso!";
+            syncStatus.style.display = "block";
+            syncStatus.style.backgroundColor = "#d4edda";
+            syncStatus.style.color = "#155724";
+            
+            // Verificar se pode sincronizar
+            if (navigator.onLine) {
+                syncData();
+            }
+        }
+
+        // Carregar dados do localStorage
+        function loadLocalData() {
+            const savedData = localStorage.getItem('sciFormData');
+            if (savedData) {
+                const formData = JSON.parse(savedData);
+                
+                document.getElementById('eventName').value = formData.eventName || '';
+                document.getElementById('startDate').value = formData.startDate || '';
+                document.getElementById('endDate').value = formData.endDate || '';
+                document.getElementById('objectives').value = formData.objectives || '';
+                document.getElementById('strategies').value = formData.strategies || '';
+                document.getElementById('tactics').value = formData.tactics || '';
+                document.getElementById('preparedBy').value = formData.preparedBy || '';
+                document.getElementById('currentDate').value = formData.currentDate || '';
+                document.getElementById('currentTime').value = formData.currentTime || '';
+            }
+        }
+
+        // Verificar se há dados pendentes para sincronizar
+        function checkPendingSync() {
+            const savedData = localStorage.getItem('sciFormData');
+            if (savedData) {
+                const formData = JSON.parse(savedData);
+                if (!formData.synced && navigator.onLine) {
+                    syncData();
+                }
+            }
+        }
+
+        // Sincronizar dados com o servidor
+        function syncData() {
+            const syncStatus = document.getElementById('syncStatus');
+            const savedData = localStorage.getItem('sciFormData');
+            
+            if (!savedData) {
+                syncStatus.textContent = "Nenhum dado local para sincronizar";
+                syncStatus.style.display = "block";
+                syncStatus.style.backgroundColor = "#fff3cd";
+                syncStatus.style.color = "#856404";
+                return;
+            }
+            
+            const formData = JSON.parse(savedData);
+            
+            // Simular envio para o servidor (substitua por sua lógica real)
+            syncStatus.textContent = "Sincronizando dados...";
+            syncStatus.style.display = "block";
+            syncStatus.style.backgroundColor = "#fff3cd";
+            syncStatus.style.color = "#856404";
+            
+            // Simular uma requisição AJAX
+            setTimeout(() => {
+                // Marcar como sincronizado
+                formData.synced = true;
+                localStorage.setItem('sciFormData', JSON.stringify(formData));
+                
+                syncStatus.textContent = "Dados sincronizados com sucesso!";
+                syncStatus.style.backgroundColor = "#d4edda";
+                syncStatus.style.color = "#155724";
+                
+                // Aqui você pode adicionar a lógica real para enviar os dados para seu servidor
+                console.log("Dados enviados para o servidor:", formData);
+                
+            }, 1500);
+        }
+
+        // Formatar data para DD/MM/AAAA
         function formatDate(dateString) {
             if (!dateString) return '';
             const date = new Date(dateString);
@@ -233,13 +399,16 @@
             return `${day}/${month}/${year}`;
         }
 
+        // Formatar hora para HH:MM
         function formatTime(timeString) {
             if (!timeString) return '';
             const [hours, minutes] = timeString.split(':');
             return `${hours.padStart(2, '0')}:${minutes.padStart(2, '0')}`;
         }
 
+        // Gerar PDF para impressão
         function gerarPDF() {
+            // Validar campos obrigatórios
             const requiredFields = [
                 'eventName', 'startDate', 'endDate', 'objectives',
                 'strategies', 'tactics', 'preparedBy', 'currentDate', 'currentTime'
@@ -255,6 +424,10 @@
             
             if (!isValid) return;
             
+            // Primeiro salve os dados localmente
+            saveFormData();
+            
+            // Preencher template do PDF
             document.getElementById('pdfEventName').textContent = document.getElementById('eventName').value;
             document.getElementById('pdfStartDate').textContent = formatDate(document.getElementById('startDate').value);
             document.getElementById('pdfEndDate').textContent = formatDate(document.getElementById('endDate').value);
@@ -265,6 +438,7 @@
             document.getElementById('pdfCurrentDate').textContent = formatDate(document.getElementById('currentDate').value);
             document.getElementById('pdfCurrentTime').textContent = formatTime(document.getElementById('currentTime').value);
             
+            // Gerar PDF
             const { jsPDF } = window.jspdf;
             const pdf = new jsPDF({
                 orientation: 'portrait',
@@ -274,6 +448,7 @@
                 compress: true
             });
             
+            // Configurações para impressão
             const pdfPreview = document.getElementById('pdfPreview');
             const options = {
                 scale: 2,
@@ -287,19 +462,22 @@
                 backgroundColor: '#FFFFFF'
             };
             
+            // Capturar o conteúdo e gerar PDF
             html2canvas(pdfPreview, options).then(canvas => {
                 const imgData = canvas.toDataURL('image/png', 1.0);
-                const imgWidth = 210;
+                const imgWidth = 210; // Largura A4 em mm
                 const imgHeight = (canvas.height * imgWidth) / canvas.width;
                 
                 pdf.addImage(imgData, 'PNG', 0, 0, imgWidth, imgHeight, undefined, 'FAST');
                 
+                // Adicionar marca d'água (opcional)
                 pdf.setGState(new pdf.GState({opacity: 0.1}));
                 pdf.setFontSize(60);
                 pdf.setTextColor(200);
                 pdf.text('COECE', 105, 150, {angle: 45, align: 'center'});
                 pdf.setGState(new pdf.GState({opacity: 1}));
                 
+                // Salvar o PDF com nome personalizado
                 const eventName = document.getElementById('eventName').value.replace(/[^a-zA-Z0-9]/g, '_');
                 const dateStr = formatDate(document.getElementById('currentDate').value).replace(/\//g, '-');
                 const fileName = `SCI_234_${eventName}_${dateStr}.pdf`;
