@@ -1,0 +1,188 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Formulário SCI 234</title>
+    <link rel="stylesheet" href="style.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+</head>
+<body>
+    <div class="container">
+        <h1>FORMULÁRIO SCI -- 234</h1>
+        
+        <form id="sci234Form">
+            <div class="form-section">
+                <div class="form-group">
+                    <label for="eventName">1. Nome do Evento</label>
+                    <input type="text" id="eventName" name="eventName" required>
+                </div>
+                
+                <div class="form-group">
+                    <label for="operationalPeriod">2. Período Operacional</label>
+                    <div class="date-range">
+                        <input type="date" id="startDate" name="startDate" required>
+                        <span>até</span>
+                        <input type="date" id="endDate" name="endDate" required>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="form-section">
+                <div class="form-group">
+                    <label for="objectives">3. Objetivos do Período Operacional / Resultados desejados</label>
+                    <textarea id="objectives" name="objectives" rows="4" required></textarea>
+                </div>
+            </div>
+            
+            <div class="form-section">
+                <div class="form-group">
+                    <label for="strategies">4. Estratégias Operacionais (Como fazer?)</label>
+                    <textarea id="strategies" name="strategies" rows="4" required></textarea>
+                </div>
+                
+                <div class="form-group">
+                    <label for="tactics">5. Táticas/Técnicas (Quem/O que/Onde/Quando)</label>
+                    <textarea id="tactics" name="tactics" rows="4" required></textarea>
+                </div>
+            </div>
+            
+            <div class="form-section">
+                <div class="form-group">
+                    <label for="preparedBy">6. Elaborado por: (Chefe Seção de Operações)</label>
+                    <input type="text" id="preparedBy" name="preparedBy" required>
+                </div>
+                
+                <div class="form-group">
+                    <label for="currentDate">7. Data:</label>
+                    <input type="date" id="currentDate" name="currentDate" required>
+                </div>
+                
+                <div class="form-group">
+                    <label for="currentTime">Hora:</label>
+                    <input type="time" id="currentTime" name="currentTime" required>
+                </div>
+            </div>
+            
+            <button type="button" id="generatePdf">Gerar PDF</button>
+        </form>
+    </div>
+
+    <!-- Template oculto para o PDF -->
+    <div id="pdfTemplate" style="display: none;">
+        <div class="pdf-container">
+            <div class="pdf-header">
+                <strong>FORMULÁRIO SCI -- 234</strong>
+            </div>
+            
+            <table class="pdf-table">
+                <tr>
+                    <td colspan="3" class="pdf-title">
+                        <strong>MATRIZ DE ANÁLISE DE TRABALHO -- SCI 234</strong>
+                    </td>
+                </tr>
+                <tr>
+                    <td class="pdf-label"><strong>1. Nome do Evento</strong></td>
+                    <td class="pdf-empty"></td>
+                    <td class="pdf-label">
+                        <strong>2.Período Operacional</strong><br>
+                        <strong>De: </strong><span id="pdfStartDate"></span> <strong>Até: </strong><span id="pdfEndDate"></span>
+                    </td>
+                </tr>
+                <tr>
+                    <td class="pdf-label">
+                        <strong>3. Objetivos do Período Operacional / Resultados desejados</strong>
+                    </td>
+                    <td class="pdf-label"><strong>4. Estratégias Operacionais (Como fazer?)</strong></td>
+                    <td class="pdf-label"><strong>5. Táticas/Técnicas (Quem/O que/Onde/Quando)</strong></td>
+                </tr>
+                <tr>
+                    <td class="pdf-content" id="pdfObjectives"></td>
+                    <td class="pdf-content" id="pdfStrategies"></td>
+                    <td class="pdf-content" id="pdfTactics"></td>
+                </tr>
+                <!-- Linhas vazias para manter o layout -->
+                <tr><td colspan="3" class="pdf-empty-row"></td></tr>
+                <tr><td colspan="3" class="pdf-empty-row"></td></tr>
+                <tr><td colspan="3" class="pdf-empty-row"></td></tr>
+                <tr><td colspan="3" class="pdf-empty-row"></td></tr>
+                <tr>
+                    <td class="pdf-label">
+                        <strong>6. Elaborado por: (Chefe Seção de Operações)</strong><br>
+                        <span id="pdfPreparedBy"></span>
+                    </td>
+                    <td class="pdf-empty"></td>
+                    <td class="pdf-label">
+                        <strong>7. Data/Horário:</strong><br>
+                        <span id="pdfCurrentDate"></span> <span id="pdfCurrentTime"></span>
+                    </td>
+                </tr>
+                <tr>
+                    <td colspan="3" class="pdf-footer">
+                        <strong>MATRIZ DE ANALISE DE TRABALHO Pág. _ de SCI 234</strong>
+                    </td>
+                </tr>
+            </table>
+            
+            <div class="pdf-instructions">
+                <strong>Instruções para preencher o Formulário SCI - 234</strong>
+                <table class="instructions-table">
+                    <tr>
+                        <th>Nº</th>
+                        <th>Títulos</th>
+                        <th>Instruções</th>
+                    </tr>
+                    <tr>
+                        <td>1</td>
+                        <td>Nome do evento</td>
+                        <td>Informe o nome do evento/incidente.</td>
+                    </tr>
+                    <tr>
+                        <td>2</td>
+                        <td>Período Operacional</td>
+                        <td>Informe o período operacional.</td>
+                    </tr>
+                    <tr>
+                        <td>3</td>
+                        <td>Objetivos do Período Operacional desejados</td>
+                        <td>Escreva os objetivos da resposta, incluindo a hora, informe situações relevantes para as ações futuros, bem como os problemas presentes.</td>
+                    </tr>
+                    <tr>
+                        <td>4</td>
+                        <td>Estratégias Operacionais</td>
+                        <td>Escreva possíveis estratégias para atingir o objetivo determinado no item nº. 3 (Como fazer)</td>
+                    </tr>
+                    <tr>
+                        <td>5</td>
+                        <td>Táticas/Técnicas</td>
+                        <td>Descreva quem, o que, onde e quando se devem realizar os trabalhos.</td>
+                    </tr>
+                    <tr>
+                        <td>6</td>
+                        <td>Elaborado por</td>
+                        <td>Informe o nome e o cargo de quem elabora o formulário.</td>
+                    </tr>
+                    <tr>
+                        <td>7</td>
+                        <td>Data</td>
+                        <td>Informe a data (dia, mês, ano).</td>
+                    </tr>
+                    <tr>
+                        <td>7</td>
+                        <td>Hora</td>
+                        <td>Informe a hora (formato 24h).</td>
+                    </tr>
+                </table>
+            </div>
+            
+            <div class="pdf-card">
+                <strong>TARJETA DE CAMPO</strong><br>
+                Frente Verso
+            </div>
+        </div>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+</html>
