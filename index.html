@@ -1,188 +1,344 @@
 <!DOCTYPE html>
-<html lang="pt-BR">
+<html lang="pt-br">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Formulário SCI 234</title>
-    <link rel="stylesheet" href="style.css">
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 20px;
+            line-height: 1.6;
+            background-color: #f5f5f5;
+        }
+        .container {
+            max-width: 900px;
+            margin: 0 auto;
+            padding: 20px;
+            background: white;
+            box-shadow: 0 0 10px rgba(0,0,0,0.1);
+        }
+        h1 {
+            text-align: center;
+            color: #333;
+            margin-bottom: 30px;
+        }
+        .form-group {
+            margin-bottom: 20px;
+        }
+        label {
+            display: block;
+            font-weight: bold;
+            margin-bottom: 5px;
+        }
+        input[type="text"],
+        input[type="date"],
+        input[type="time"],
+        textarea {
+            width: 100%;
+            padding: 8px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            box-sizing: border-box;
+        }
+        textarea {
+            height: 100px;
+            resize: vertical;
+        }
+        .date-range {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        button {
+            background-color: #0066cc;
+            color: white;
+            padding: 10px 15px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 16px;
+            margin-top: 20px;
+            display: block;
+            margin-left: auto;
+            margin-right: auto;
+        }
+        button:hover {
+            background-color: #0055aa;
+        }
+        #pdfPreview {
+            position: absolute;
+            left: -9999px;
+        }
+    </style>
 </head>
 <body>
     <div class="container">
         <h1>FORMULÁRIO SCI -- 234</h1>
         
-        <form id="sci234Form">
-            <div class="form-section">
-                <div class="form-group">
-                    <label for="eventName">1. Nome do Evento</label>
-                    <input type="text" id="eventName" name="eventName" required>
-                </div>
-                
-                <div class="form-group">
-                    <label for="operationalPeriod">2. Período Operacional</label>
-                    <div class="date-range">
-                        <input type="date" id="startDate" name="startDate" required>
-                        <span>até</span>
-                        <input type="date" id="endDate" name="endDate" required>
-                    </div>
+        <form id="sciForm">
+            <div class="form-group">
+                <label for="eventName">1. Nome do Evento</label>
+                <input type="text" id="eventName" required>
+            </div>
+            
+            <div class="form-group">
+                <label for="startDate">2. Período Operacional</label>
+                <div class="date-range">
+                    <input type="date" id="startDate" required>
+                    <span>até</span>
+                    <input type="date" id="endDate" required>
                 </div>
             </div>
             
-            <div class="form-section">
-                <div class="form-group">
-                    <label for="objectives">3. Objetivos do Período Operacional / Resultados desejados</label>
-                    <textarea id="objectives" name="objectives" rows="4" required></textarea>
-                </div>
+            <div class="form-group">
+                <label for="objectives">3. Objetivos do Período Operacional / Resultados desejados</label>
+                <textarea id="objectives" required></textarea>
             </div>
             
-            <div class="form-section">
-                <div class="form-group">
-                    <label for="strategies">4. Estratégias Operacionais (Como fazer?)</label>
-                    <textarea id="strategies" name="strategies" rows="4" required></textarea>
-                </div>
-                
-                <div class="form-group">
-                    <label for="tactics">5. Táticas/Técnicas (Quem/O que/Onde/Quando)</label>
-                    <textarea id="tactics" name="tactics" rows="4" required></textarea>
-                </div>
+            <div class="form-group">
+                <label for="strategies">4. Estratégias Operacionais (Como fazer?)</label>
+                <textarea id="strategies" required></textarea>
             </div>
             
-            <div class="form-section">
-                <div class="form-group">
-                    <label for="preparedBy">6. Elaborado por: (Chefe Seção de Operações)</label>
-                    <input type="text" id="preparedBy" name="preparedBy" required>
-                </div>
-                
-                <div class="form-group">
-                    <label for="currentDate">7. Data:</label>
-                    <input type="date" id="currentDate" name="currentDate" required>
-                </div>
-                
-                <div class="form-group">
-                    <label for="currentTime">Hora:</label>
-                    <input type="time" id="currentTime" name="currentTime" required>
-                </div>
+            <div class="form-group">
+                <label for="tactics">5. Táticas/Técnicas (Quem/O que/Onde/Quando)</label>
+                <textarea id="tactics" required></textarea>
             </div>
             
-            <button type="button" id="generatePdf">Gerar PDF</button>
+            <div class="form-group">
+                <label for="preparedBy">6. Elaborado por: (Chefe Seção de Operações)</label>
+                <input type="text" id="preparedBy" required>
+            </div>
+            
+            <div class="form-group">
+                <label for="currentDate">7. Data:</label>
+                <input type="date" id="currentDate" required>
+            </div>
+            
+            <div class="form-group">
+                <label for="currentTime">Hora:</label>
+                <input type="time" id="currentTime" required>
+            </div>
+            
+            <button type="button" onclick="gerarPDF()">Gerar PDF para Impressão</button>
         </form>
     </div>
 
-    <!-- Template oculto para o PDF -->
-    <div id="pdfTemplate" style="display: none;">
-        <div class="pdf-container">
-            <div class="pdf-header">
+    <!-- Template para o PDF (oculto) -->
+    <div id="pdfPreview">
+        <div style="width: 210mm; min-height: 297mm; padding: 15mm; margin: 0 auto; box-sizing: border-box; font-family: Arial, sans-serif; background: white;">
+            <div style="text-align: center; font-size: 14pt; margin-bottom: 10mm;">
                 <strong>FORMULÁRIO SCI -- 234</strong>
             </div>
             
-            <table class="pdf-table">
+            <table style="width: 100%; border-collapse: collapse; margin-bottom: 10mm; page-break-inside: avoid;">
                 <tr>
-                    <td colspan="3" class="pdf-title">
+                    <td colspan="3" style="border: 1px solid #000; padding: 5px; text-align: center; font-weight: bold;">
                         <strong>MATRIZ DE ANÁLISE DE TRABALHO -- SCI 234</strong>
                     </td>
                 </tr>
                 <tr>
-                    <td class="pdf-label"><strong>1. Nome do Evento</strong></td>
-                    <td class="pdf-empty"></td>
-                    <td class="pdf-label">
-                        <strong>2.Período Operacional</strong><br>
-                        <strong>De: </strong><span id="pdfStartDate"></span> <strong>Até: </strong><span id="pdfEndDate"></span>
+                    <td style="border: 1px solid #000; padding: 5px; width: 33%; font-weight: bold; vertical-align: top;">
+                        <strong>1. Nome do Evento</strong><br>
+                        <span id="pdfEventName" style="font-weight: normal; word-break: break-word;"></span>
+                    </td>
+                    <td style="border: 1px solid #000; padding: 5px; width: 33%; background-color: #f0f0f0;"></td>
+                    <td style="border: 1px solid #000; padding: 5px; width: 34%; font-weight: bold; vertical-align: top;">
+                        <strong>2. Período Operacional</strong><br>
+                        <strong>De: </strong><span id="pdfStartDate" style="font-weight: normal;"></span><br>
+                        <strong>Até: </strong><span id="pdfEndDate" style="font-weight: normal;"></span>
                     </td>
                 </tr>
                 <tr>
-                    <td class="pdf-label">
+                    <td style="border: 1px solid #000; padding: 5px; font-weight: bold; height: 60mm; vertical-align: top;">
                         <strong>3. Objetivos do Período Operacional / Resultados desejados</strong>
                     </td>
-                    <td class="pdf-label"><strong>4. Estratégias Operacionais (Como fazer?)</strong></td>
-                    <td class="pdf-label"><strong>5. Táticas/Técnicas (Quem/O que/Onde/Quando)</strong></td>
+                    <td style="border: 1px solid #000; padding: 5px; font-weight: bold; vertical-align: top;">
+                        <strong>4. Estratégias Operacionais (Como fazer?)</strong>
+                    </td>
+                    <td style="border: 1px solid #000; padding: 5px; font-weight: bold; vertical-align: top;">
+                        <strong>5. Táticas/Técnicas (Quem/O que/Onde/Quando)</strong>
+                    </td>
                 </tr>
                 <tr>
-                    <td class="pdf-content" id="pdfObjectives"></td>
-                    <td class="pdf-content" id="pdfStrategies"></td>
-                    <td class="pdf-content" id="pdfTactics"></td>
+                    <td style="border: 1px solid #000; padding: 5px; height: 60mm; vertical-align: top; word-break: break-word;" id="pdfObjectives"></td>
+                    <td style="border: 1px solid #000; padding: 5px; vertical-align: top; word-break: break-word;" id="pdfStrategies"></td>
+                    <td style="border: 1px solid #000; padding: 5px; vertical-align: top; word-break: break-word;" id="pdfTactics"></td>
                 </tr>
-                <!-- Linhas vazias para manter o layout -->
-                <tr><td colspan="3" class="pdf-empty-row"></td></tr>
-                <tr><td colspan="3" class="pdf-empty-row"></td></tr>
-                <tr><td colspan="3" class="pdf-empty-row"></td></tr>
-                <tr><td colspan="3" class="pdf-empty-row"></td></tr>
+                <!-- Linhas vazias -->
+                <tr><td colspan="3" style="border: 1px solid #000; height: 15mm;"></td></tr>
+                <tr><td colspan="3" style="border: 1px solid #000; height: 15mm;"></td></tr>
+                <tr><td colspan="3" style="border: 1px solid #000; height: 15mm;"></td></tr>
+                <tr><td colspan="3" style="border: 1px solid #000; height: 15mm;"></td></tr>
                 <tr>
-                    <td class="pdf-label">
+                    <td style="border: 1px solid #000; padding: 5px; font-weight: bold; vertical-align: top;">
                         <strong>6. Elaborado por: (Chefe Seção de Operações)</strong><br>
-                        <span id="pdfPreparedBy"></span>
+                        <span id="pdfPreparedBy" style="font-weight: normal; word-break: break-word;"></span>
                     </td>
-                    <td class="pdf-empty"></td>
-                    <td class="pdf-label">
+                    <td style="border: 1px solid #000; padding: 5px; background-color: #f0f0f0;"></td>
+                    <td style="border: 1px solid #000; padding: 5px; font-weight: bold; vertical-align: top;">
                         <strong>7. Data/Horário:</strong><br>
-                        <span id="pdfCurrentDate"></span> <span id="pdfCurrentTime"></span>
+                        <span id="pdfCurrentDate" style="font-weight: normal;"></span> 
+                        <span id="pdfCurrentTime" style="font-weight: normal;"></span>
                     </td>
                 </tr>
                 <tr>
-                    <td colspan="3" class="pdf-footer">
+                    <td colspan="3" style="border: 1px solid #000; padding: 5px; text-align: center; font-weight: bold;">
                         <strong>MATRIZ DE ANALISE DE TRABALHO Pág. _ de SCI 234</strong>
                     </td>
                 </tr>
             </table>
             
-            <div class="pdf-instructions">
+            <div style="margin-top: 10mm; font-size: 10pt; page-break-inside: avoid;">
                 <strong>Instruções para preencher o Formulário SCI - 234</strong>
-                <table class="instructions-table">
+                <table style="width: 100%; border-collapse: collapse; margin-top: 5mm;">
                     <tr>
-                        <th>Nº</th>
-                        <th>Títulos</th>
-                        <th>Instruções</th>
+                        <th style="border: 1px solid #000; padding: 3px; background-color: #f0f0f0; font-weight: bold;">Nº</th>
+                        <th style="border: 1px solid #000; padding: 3px; background-color: #f0f0f0; font-weight: bold;">Títulos</th>
+                        <th style="border: 1px solid #000; padding: 3px; background-color: #f0f0f0; font-weight: bold;">Instruções</th>
                     </tr>
                     <tr>
-                        <td>1</td>
-                        <td>Nome do evento</td>
-                        <td>Informe o nome do evento/incidente.</td>
+                        <td style="border: 1px solid #000; padding: 3px; text-align: center;">1</td>
+                        <td style="border: 1px solid #000; padding: 3px;">Nome do evento</td>
+                        <td style="border: 1px solid #000; padding: 3px;">Informe o nome do evento/incidente.</td>
                     </tr>
                     <tr>
-                        <td>2</td>
-                        <td>Período Operacional</td>
-                        <td>Informe o período operacional.</td>
+                        <td style="border: 1px solid #000; padding: 3px; text-align: center;">2</td>
+                        <td style="border: 1px solid #000; padding: 3px;">Período Operacional</td>
+                        <td style="border: 1px solid #000; padding: 3px;">Informe o período operacional.</td>
                     </tr>
                     <tr>
-                        <td>3</td>
-                        <td>Objetivos do Período Operacional desejados</td>
-                        <td>Escreva os objetivos da resposta, incluindo a hora, informe situações relevantes para as ações futuros, bem como os problemas presentes.</td>
+                        <td style="border: 1px solid #000; padding: 3px; text-align: center;">3</td>
+                        <td style="border: 1px solid #000; padding: 3px;">Objetivos do Período Operacional desejados</td>
+                        <td style="border: 1px solid #000; padding: 3px;">Escreva os objetivos da resposta, incluindo a hora, informe situações relevantes para as ações futuros, bem como os problemas presentes.</td>
                     </tr>
                     <tr>
-                        <td>4</td>
-                        <td>Estratégias Operacionais</td>
-                        <td>Escreva possíveis estratégias para atingir o objetivo determinado no item nº. 3 (Como fazer)</td>
+                        <td style="border: 1px solid #000; padding: 3px; text-align: center;">4</td>
+                        <td style="border: 1px solid #000; padding: 3px;">Estratégias Operacionais</td>
+                        <td style="border: 1px solid #000; padding: 3px;">Escreva possíveis estratégias para atingir o objetivo determinado no item nº. 3 (Como fazer)</td>
                     </tr>
                     <tr>
-                        <td>5</td>
-                        <td>Táticas/Técnicas</td>
-                        <td>Descreva quem, o que, onde e quando se devem realizar os trabalhos.</td>
+                        <td style="border: 1px solid #000; padding: 3px; text-align: center;">5</td>
+                        <td style="border: 1px solid #000; padding: 3px;">Táticas/Técnicas</td>
+                        <td style="border: 1px solid #000; padding: 3px;">Descreva quem, o que, onde e quando se devem realizar os trabalhos.</td>
                     </tr>
                     <tr>
-                        <td>6</td>
-                        <td>Elaborado por</td>
-                        <td>Informe o nome e o cargo de quem elabora o formulário.</td>
+                        <td style="border: 1px solid #000; padding: 3px; text-align: center;">6</td>
+                        <td style="border: 1px solid #000; padding: 3px;">Elaborado por</td>
+                        <td style="border: 1px solid #000; padding: 3px;">Informe o nome e o cargo de quem elabora o formulário.</td>
                     </tr>
                     <tr>
-                        <td>7</td>
-                        <td>Data</td>
-                        <td>Informe a data (dia, mês, ano).</td>
+                        <td style="border: 1px solid #000; padding: 3px; text-align: center;">7</td>
+                        <td style="border: 1px solid #000; padding: 3px;">Data</td>
+                        <td style="border: 1px solid #000; padding: 3px;">Informe a data (dia, mês, ano).</td>
                     </tr>
                     <tr>
-                        <td>7</td>
-                        <td>Hora</td>
-                        <td>Informe a hora (formato 24h).</td>
+                        <td style="border: 1px solid #000; padding: 3px; text-align: center;">7</td>
+                        <td style="border: 1px solid #000; padding: 3px;">Hora</td>
+                        <td style="border: 1px solid #000; padding: 3px;">Informe a hora (formato 24h).</td>
                     </tr>
                 </table>
             </div>
             
-            <div class="pdf-card">
+            <div style="margin-top: 10mm; text-align: center; font-size: 10pt; border-top: 1px dashed #000; padding-top: 5mm;">
                 <strong>TARJETA DE CAMPO</strong><br>
                 Frente Verso
             </div>
         </div>
     </div>
 
-    <script src="script.js"></script>
+    <script>
+        // Configuração inicial
+        document.addEventListener('DOMContentLoaded', function() {
+            // Definir data atual como padrão
+            const today = new Date();
+            const dateStr = today.toISOString().split('T')[0];
+            const timeStr = today.getHours().toString().padStart(2, '0') + ':' + 
+                            today.getMinutes().toString().padStart(2, '0');
+            
+            document.getElementById('currentDate').value = dateStr;
+            document.getElementById('currentTime').value = timeStr;
+        });
+
+        // Formatar data para DD/MM/AAAA
+        function formatDate(dateString) {
+            if (!dateString) return '';
+            const date = new Date(dateString);
+            const day = date.getDate().toString().padStart(2, '0');
+            const month = (date.getMonth() + 1).toString().padStart(2, '0');
+            const year = date.getFullYear();
+            return `${day}/${month}/${year}`;
+        }
+
+        // Gerar PDF para impressão
+        function gerarPDF() {
+            // Validar campos obrigatórios
+            const requiredFields = [
+                'eventName', 'startDate', 'endDate', 'objectives',
+                'strategies', 'tactics', 'preparedBy', 'currentDate', 'currentTime'
+            ];
+            
+            let isValid = true;
+            requiredFields.forEach(field => {
+                if (!document.getElementById(field).value) {
+                    alert(`Por favor, preencha o campo: ${field.replace(/([A-Z])/g, ' $1').trim()}`);
+                    isValid = false;
+                }
+            });
+            
+            if (!isValid) return;
+            
+            // Preencher template do PDF
+            document.getElementById('pdfEventName').textContent = document.getElementById('eventName').value;
+            document.getElementById('pdfStartDate').textContent = formatDate(document.getElementById('startDate').value);
+            document.getElementById('pdfEndDate').textContent = formatDate(document.getElementById('endDate').value);
+            document.getElementById('pdfObjectives').textContent = document.getElementById('objectives').value;
+            document.getElementById('pdfStrategies').textContent = document.getElementById('strategies').value;
+            document.getElementById('pdfTactics').textContent = document.getElementById('tactics').value;
+            document.getElementById('pdfPreparedBy').textContent = document.getElementById('preparedBy').value;
+            document.getElementById('pdfCurrentDate').textContent = formatDate(document.getElementById('currentDate').value);
+            document.getElementById('pdfCurrentTime').textContent = document.getElementById('currentTime').value;
+            
+            // Gerar PDF
+            const { jsPDF } = window.jspdf;
+            const pdf = new jsPDF({
+                orientation: 'portrait',
+                unit: 'mm',
+                format: 'a4',
+                putOnlyUsedFonts: true,
+                compress: true
+            });
+            
+            // Configurações para impressão
+            const pdfPreview = document.getElementById('pdfPreview');
+            const options = {
+                scale: 2,
+                useCORS: true,
+                logging: false,
+                scrollX: 0,
+                scrollY: 0,
+                allowTaint: true,
+                letterRendering: true,
+                useOverflow: false,
+                backgroundColor: '#FFFFFF'
+            };
+            
+            // Capturar o conteúdo e gerar PDF
+            html2canvas(pdfPreview, options).then(canvas => {
+                const imgData = canvas.toDataURL('image/png', 1.0);
+                const imgWidth = 210; // Largura A4 em mm
+                const imgHeight = (canvas.height * imgWidth) / canvas.width;
+                
+                pdf.addImage(imgData, 'PNG', 0, 0, imgWidth, imgHeight, undefined, 'FAST');
+                
+                // Salvar o PDF com nome personalizado
+                const fileName = `SCI_234_${document.getElementById('eventName').value.replace(/[^a-zA-Z0-9]/g, '_')}.pdf`;
+                pdf.save(fileName);
+            });
+        }
+    </script>
 </body>
 </html>
