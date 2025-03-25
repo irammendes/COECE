@@ -76,7 +76,7 @@
 </head>
 <body>
     <div class="container">
-        <h1>FORMULÁRIO SCI -- 234</h1>
+        <h1>FORMULÁRIO SCI 234</h1>
         
         <form id="sciForm">
             <div class="form-group">
@@ -127,133 +127,88 @@
         </form>
     </div>
 
-    <!-- Template para o PDF (oculto) -->
     <div id="pdfPreview">
-        <div style="width: 210mm; min-height: 297mm; padding: 15mm; margin: 0 auto; box-sizing: border-box; font-family: Arial, sans-serif; background: white;">
-            <div style="text-align: center; font-size: 14pt; margin-bottom: 10mm;">
-                <strong>FORMULÁRIO SCI -- 234</strong>
+        <div style="width: 210mm; min-height: 297mm; padding: 15mm; margin: 0 auto; box-sizing: border-box; font-family: Arial, sans-serif; background: white; position: relative;">
+            <div style="position: absolute; top: 15mm; left: 15mm;">
+                <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRxzJ017VFFl09z6LzBxTtNC6axLwHq6YYK-A&s" style="max-width: 50mm; max-height: 20mm;">
             </div>
             
-            <table style="width: 100%; border-collapse: collapse; margin-bottom: 10mm; page-break-inside: avoid;">
+            <div style="text-align: center; margin-bottom: 10mm; padding-top: 10mm;">
+                <div style="font-size: 14pt; font-weight: bold; margin-bottom: 5px;">FORMULÁRIO SCI 234</div>
+                
+            </div>
+            
+            <div style="position: absolute; top: 15mm; right: 15mm; text-align: right; font-size: 9pt; border: 1px solid #ddd; padding: 5px;">
+                <div style="font-weight: bold;">COORDENAÇÃO</div>
+                <div>Emergências climáticas e epizotias</div>
+            </div>
+            
+            <table style="width: 100%; border-collapse: collapse; margin-bottom: 10mm; border: 1px solid #000;">
                 <tr>
-                    <td colspan="3" style="border: 1px solid #000; padding: 5px; text-align: center; font-weight: bold;">
-                        <strong>MATRIZ DE ANÁLISE DE TRABALHO -- SCI 234</strong>
+                    <td style="border: 1px solid #000; padding: 8px; width: 50%; vertical-align: top;">
+                        <div style="font-weight: bold; margin-bottom: 5px;">1. Nome do Evento</div>
+                        <div id="pdfEventName" style="min-height: 20mm; word-break: break-word; padding: 5px; border: 1px dashed #ccc;"></div>
+                    </td>
+                    <td style="border: 1px solid #000; padding: 8px; width: 50%; vertical-align: top;">
+                        <div style="font-weight: bold; margin-bottom: 5px;">2. Período Operacional</div>
+                        <div style="display: flex; gap: 10px; min-height: 20mm;">
+                            <div style="flex: 1; padding: 5px;">
+                                <div style="font-weight: bold; font-size: 10pt;">De:</div>
+                                <div id="pdfStartDate" style="border: 1px dashed #ccc; padding: 5px; min-height: 8mm;"></div>
+                            </div>
+                            <div style="flex: 1; padding: 5px;">
+                                <div style="font-weight: bold; font-size: 10pt;">Até:</div>
+                                <div id="pdfEndDate" style="border: 1px dashed #ccc; padding: 5px; min-height: 8mm;"></div>
+                            </div>
+                        </div>
                     </td>
                 </tr>
+                
                 <tr>
-                    <td style="border: 1px solid #000; padding: 5px; width: 33%; font-weight: bold; vertical-align: top;">
-                        <strong>1. Nome do Evento</strong><br>
-                        <span id="pdfEventName" style="font-weight: normal; word-break: break-word;"></span>
-                    </td>
-                    <td style="border: 1px solid #000; padding: 5px; width: 33%; background-color: #f0f0f0;"></td>
-                    <td style="border: 1px solid #000; padding: 5px; width: 34%; font-weight: bold; vertical-align: top;">
-                        <strong>2. Período Operacional</strong><br>
-                        <strong>De: </strong><span id="pdfStartDate" style="font-weight: normal;"></span><br>
-                        <strong>Até: </strong><span id="pdfEndDate" style="font-weight: normal;"></span>
+                    <td colspan="2" style="border: 1px solid #000; padding: 8px; vertical-align: top;">
+                        <div style="font-weight: bold; margin-bottom: 5px;">3. Objetivos do Período Operacional / Resultados desejados</div>
+                        <div id="pdfObjectives" style="min-height: 40mm; word-break: break-word; padding: 10px; border: 1px dashed #ccc; line-height: 1.5;"></div>
                     </td>
                 </tr>
+                
                 <tr>
-                    <td style="border: 1px solid #000; padding: 5px; font-weight: bold; height: 60mm; vertical-align: top;">
-                        <strong>3. Objetivos do Período Operacional / Resultados desejados</strong>
+                    <td style="border: 1px solid #000; padding: 8px; width: 50%; vertical-align: top;">
+                        <div style="font-weight: bold; margin-bottom: 5px;">4. Estratégias Operacionais (Como fazer?)</div>
+                        <div id="pdfStrategies" style="min-height: 50mm; word-break: break-word; padding: 10px; border: 1px dashed #ccc; line-height: 1.5;"></div>
                     </td>
-                    <td style="border: 1px solid #000; padding: 5px; font-weight: bold; vertical-align: top;">
-                        <strong>4. Estratégias Operacionais (Como fazer?)</strong>
-                    </td>
-                    <td style="border: 1px solid #000; padding: 5px; font-weight: bold; vertical-align: top;">
-                        <strong>5. Táticas/Técnicas (Quem/O que/Onde/Quando)</strong>
+                    <td style="border: 1px solid #000; padding: 8px; width: 50%; vertical-align: top;">
+                        <div style="font-weight: bold; margin-bottom: 5px;">5. Táticas/Técnicas (Quem/O que/Onde/Quando)</div>
+                        <div id="pdfTactics" style="min-height: 50mm; word-break: break-word; padding: 10px; border: 1px dashed #ccc; line-height: 1.5;"></div>
                     </td>
                 </tr>
+                
                 <tr>
-                    <td style="border: 1px solid #000; padding: 5px; height: 60mm; vertical-align: top; word-break: break-word;" id="pdfObjectives"></td>
-                    <td style="border: 1px solid #000; padding: 5px; vertical-align: top; word-break: break-word;" id="pdfStrategies"></td>
-                    <td style="border: 1px solid #000; padding: 5px; vertical-align: top; word-break: break-word;" id="pdfTactics"></td>
-                </tr>
-                <!-- Linhas vazias -->
-                <tr><td colspan="3" style="border: 1px solid #000; height: 15mm;"></td></tr>
-                <tr><td colspan="3" style="border: 1px solid #000; height: 15mm;"></td></tr>
-                <tr><td colspan="3" style="border: 1px solid #000; height: 15mm;"></td></tr>
-                <tr><td colspan="3" style="border: 1px solid #000; height: 15mm;"></td></tr>
-                <tr>
-                    <td style="border: 1px solid #000; padding: 5px; font-weight: bold; vertical-align: top;">
-                        <strong>6. Elaborado por: (Chefe Seção de Operações)</strong><br>
-                        <span id="pdfPreparedBy" style="font-weight: normal; word-break: break-word;"></span>
+                    <td style="border: 1px solid #000; padding: 8px; width: 50%; vertical-align: top;">
+                        <div style="font-weight: bold; margin-bottom: 5px;">6. Elaborado por: (Chefe Seção de Operações)</div>
+                        <div id="pdfPreparedBy" style="min-height: 15mm; word-break: break-word; padding: 5px; border: 1px dashed #ccc;"></div>
                     </td>
-                    <td style="border: 1px solid #000; padding: 5px; background-color: #f0f0f0;"></td>
-                    <td style="border: 1px solid #000; padding: 5px; font-weight: bold; vertical-align: top;">
-                        <strong>7. Data/Horário:</strong><br>
-                        <span id="pdfCurrentDate" style="font-weight: normal;"></span> 
-                        <span id="pdfCurrentTime" style="font-weight: normal;"></span>
-                    </td>
-                </tr>
-                <tr>
-                    <td colspan="3" style="border: 1px solid #000; padding: 5px; text-align: center; font-weight: bold;">
-                        <strong>MATRIZ DE ANALISE DE TRABALHO Pág. _ de SCI 234</strong>
+                    <td style="border: 1px solid #000; padding: 8px; width: 50%; vertical-align: top;">
+                        <div style="font-weight: bold; margin-bottom: 5px;">7. Data/Horário:</div>
+                        <div style="display: flex; gap: 10px; min-height: 15mm;">
+                            <div style="flex: 1; padding: 5px;">
+                                <div style="font-weight: bold; font-size: 10pt;">Data:</div>
+                                <div id="pdfCurrentDate" style="border: 1px dashed #ccc; padding: 5px; min-height: 8mm;"></div>
+                            </div>
+                            <div style="flex: 1; padding: 5px;">
+                                <div style="font-weight: bold; font-size: 10pt;">Hora:</div>
+                                <div id="pdfCurrentTime" style="border: 1px dashed #ccc; padding: 5px; min-height: 8mm;"></div>
+                            </div>
+                        </div>
                     </td>
                 </tr>
             </table>
             
-            <div style="margin-top: 10mm; font-size: 10pt; page-break-inside: avoid;">
-                <strong>Instruções para preencher o Formulário SCI - 234</strong>
-                <table style="width: 100%; border-collapse: collapse; margin-top: 5mm;">
-                    <tr>
-                        <th style="border: 1px solid #000; padding: 3px; background-color: #f0f0f0; font-weight: bold;">Nº</th>
-                        <th style="border: 1px solid #000; padding: 3px; background-color: #f0f0f0; font-weight: bold;">Títulos</th>
-                        <th style="border: 1px solid #000; padding: 3px; background-color: #f0f0f0; font-weight: bold;">Instruções</th>
-                    </tr>
-                    <tr>
-                        <td style="border: 1px solid #000; padding: 3px; text-align: center;">1</td>
-                        <td style="border: 1px solid #000; padding: 3px;">Nome do evento</td>
-                        <td style="border: 1px solid #000; padding: 3px;">Informe o nome do evento/incidente.</td>
-                    </tr>
-                    <tr>
-                        <td style="border: 1px solid #000; padding: 3px; text-align: center;">2</td>
-                        <td style="border: 1px solid #000; padding: 3px;">Período Operacional</td>
-                        <td style="border: 1px solid #000; padding: 3px;">Informe o período operacional.</td>
-                    </tr>
-                    <tr>
-                        <td style="border: 1px solid #000; padding: 3px; text-align: center;">3</td>
-                        <td style="border: 1px solid #000; padding: 3px;">Objetivos do Período Operacional desejados</td>
-                        <td style="border: 1px solid #000; padding: 3px;">Escreva os objetivos da resposta, incluindo a hora, informe situações relevantes para as ações futuros, bem como os problemas presentes.</td>
-                    </tr>
-                    <tr>
-                        <td style="border: 1px solid #000; padding: 3px; text-align: center;">4</td>
-                        <td style="border: 1px solid #000; padding: 3px;">Estratégias Operacionais</td>
-                        <td style="border: 1px solid #000; padding: 3px;">Escreva possíveis estratégias para atingir o objetivo determinado no item nº. 3 (Como fazer)</td>
-                    </tr>
-                    <tr>
-                        <td style="border: 1px solid #000; padding: 3px; text-align: center;">5</td>
-                        <td style="border: 1px solid #000; padding: 3px;">Táticas/Técnicas</td>
-                        <td style="border: 1px solid #000; padding: 3px;">Descreva quem, o que, onde e quando se devem realizar os trabalhos.</td>
-                    </tr>
-                    <tr>
-                        <td style="border: 1px solid #000; padding: 3px; text-align: center;">6</td>
-                        <td style="border: 1px solid #000; padding: 3px;">Elaborado por</td>
-                        <td style="border: 1px solid #000; padding: 3px;">Informe o nome e o cargo de quem elabora o formulário.</td>
-                    </tr>
-                    <tr>
-                        <td style="border: 1px solid #000; padding: 3px; text-align: center;">7</td>
-                        <td style="border: 1px solid #000; padding: 3px;">Data</td>
-                        <td style="border: 1px solid #000; padding: 3px;">Informe a data (dia, mês, ano).</td>
-                    </tr>
-                    <tr>
-                        <td style="border: 1px solid #000; padding: 3px; text-align: center;">7</td>
-                        <td style="border: 1px solid #000; padding: 3px;">Hora</td>
-                        <td style="border: 1px solid #000; padding: 3px;">Informe a hora (formato 24h).</td>
-                    </tr>
-                </table>
-            </div>
-            
-            <div style="margin-top: 10mm; text-align: center; font-size: 10pt; border-top: 1px dashed #000; padding-top: 5mm;">
-                <strong>TARJETA DE CAMPO</strong><br>
-                Frente Verso
-            </div>
+
         </div>
     </div>
 
     <script>
-        // Configuração inicial
         document.addEventListener('DOMContentLoaded', function() {
-            // Definir data atual como padrão
             const today = new Date();
             const dateStr = today.toISOString().split('T')[0];
             const timeStr = today.getHours().toString().padStart(2, '0') + ':' + 
@@ -261,9 +216,14 @@
             
             document.getElementById('currentDate').value = dateStr;
             document.getElementById('currentTime').value = timeStr;
+            
+            const nextWeek = new Date();
+            nextWeek.setDate(today.getDate() + 7);
+            const nextWeekStr = nextWeek.toISOString().split('T')[0];
+            document.getElementById('startDate').value = dateStr;
+            document.getElementById('endDate').value = nextWeekStr;
         });
 
-        // Formatar data para DD/MM/AAAA
         function formatDate(dateString) {
             if (!dateString) return '';
             const date = new Date(dateString);
@@ -273,9 +233,13 @@
             return `${day}/${month}/${year}`;
         }
 
-        // Gerar PDF para impressão
+        function formatTime(timeString) {
+            if (!timeString) return '';
+            const [hours, minutes] = timeString.split(':');
+            return `${hours.padStart(2, '0')}:${minutes.padStart(2, '0')}`;
+        }
+
         function gerarPDF() {
-            // Validar campos obrigatórios
             const requiredFields = [
                 'eventName', 'startDate', 'endDate', 'objectives',
                 'strategies', 'tactics', 'preparedBy', 'currentDate', 'currentTime'
@@ -291,7 +255,6 @@
             
             if (!isValid) return;
             
-            // Preencher template do PDF
             document.getElementById('pdfEventName').textContent = document.getElementById('eventName').value;
             document.getElementById('pdfStartDate').textContent = formatDate(document.getElementById('startDate').value);
             document.getElementById('pdfEndDate').textContent = formatDate(document.getElementById('endDate').value);
@@ -300,9 +263,8 @@
             document.getElementById('pdfTactics').textContent = document.getElementById('tactics').value;
             document.getElementById('pdfPreparedBy').textContent = document.getElementById('preparedBy').value;
             document.getElementById('pdfCurrentDate').textContent = formatDate(document.getElementById('currentDate').value);
-            document.getElementById('pdfCurrentTime').textContent = document.getElementById('currentTime').value;
+            document.getElementById('pdfCurrentTime').textContent = formatTime(document.getElementById('currentTime').value);
             
-            // Gerar PDF
             const { jsPDF } = window.jspdf;
             const pdf = new jsPDF({
                 orientation: 'portrait',
@@ -312,7 +274,6 @@
                 compress: true
             });
             
-            // Configurações para impressão
             const pdfPreview = document.getElementById('pdfPreview');
             const options = {
                 scale: 2,
@@ -326,16 +287,22 @@
                 backgroundColor: '#FFFFFF'
             };
             
-            // Capturar o conteúdo e gerar PDF
             html2canvas(pdfPreview, options).then(canvas => {
                 const imgData = canvas.toDataURL('image/png', 1.0);
-                const imgWidth = 210; // Largura A4 em mm
+                const imgWidth = 210;
                 const imgHeight = (canvas.height * imgWidth) / canvas.width;
                 
                 pdf.addImage(imgData, 'PNG', 0, 0, imgWidth, imgHeight, undefined, 'FAST');
                 
-                // Salvar o PDF com nome personalizado
-                const fileName = `SCI_234_${document.getElementById('eventName').value.replace(/[^a-zA-Z0-9]/g, '_')}.pdf`;
+                pdf.setGState(new pdf.GState({opacity: 0.1}));
+                pdf.setFontSize(60);
+                pdf.setTextColor(200);
+                pdf.text('COECE', 105, 150, {angle: 45, align: 'center'});
+                pdf.setGState(new pdf.GState({opacity: 1}));
+                
+                const eventName = document.getElementById('eventName').value.replace(/[^a-zA-Z0-9]/g, '_');
+                const dateStr = formatDate(document.getElementById('currentDate').value).replace(/\//g, '-');
+                const fileName = `SCI_234_${eventName}_${dateStr}.pdf`;
                 pdf.save(fileName);
             });
         }
